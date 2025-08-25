@@ -4,11 +4,16 @@
 
 const int BTN_PIN_R = 28;
 
+volatile bool button_event_flag = false;
+volatile bool button_fall_event = false;
+
 void btn_callback(uint gpio, uint32_t events) {
   if (events == 0x4) { // fall edge
-    printf("fall \n");
+    button_fall_event = true;
+    button_event_flag = true;
   } else if (events == 0x8) { // rise edge
-    printf("rise \n");
+    button_fall_event = false;
+    button_event_flag = true;
   }
 }
 
@@ -23,5 +28,13 @@ int main() {
       BTN_PIN_R, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &btn_callback);
 
   while (true) {
+    if (button_event_flag) {
+      button_event_flag = false;
+      if (button_fall_event) {
+        printf("fall \n");
+      } else {
+        printf("rise \n");
+      }
+    }
   }
 }
