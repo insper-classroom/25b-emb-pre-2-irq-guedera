@@ -4,16 +4,16 @@
 
 const int BTN_PIN_R = 28;
 
-volatile bool button_event_flag = false;
-volatile bool button_fall_event = false;
+volatile int button_event_flag = 0;
+volatile int button_fall_event = 0;
 
 void btn_callback(uint gpio, uint32_t events) {
   if (events == 0x4) { // fall edge
-    button_fall_event = true;
-    button_event_flag = true;
+    button_fall_event = 1;
+    button_event_flag = 1;
   } else if (events == 0x8) { // rise edge
-    button_fall_event = false;
-    button_event_flag = true;
+    button_fall_event = 0;
+    button_event_flag = 1;
   }
 }
 
@@ -29,7 +29,7 @@ int main() {
 
   while (true) {
     if (button_event_flag) {
-      button_event_flag = false;
+      button_event_flag = 0;
       if (button_fall_event) {
         printf("fall \n");
       } else {
